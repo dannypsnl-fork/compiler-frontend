@@ -1,5 +1,9 @@
 #lang racket
 
+(provide make-parser
+         parse-expr
+         parse-unary)
+
 (require "lexer.rkt")
 
 ; ast
@@ -49,9 +53,12 @@
   #:mutable
   #:transparent)
 
+(define (make-parser filename [input (open-input-file filename)])
+  (define lexer (lex filename input))
+  (parser filename lexer (stream) 0))
+
 (define (parse name input)
-  (define lexer (lex name input))
-  (define p (parser name lexer (stream) 0))
+  (define p (make-parser name input))
   (parse-expr p #f 1))
 
 (define (peek p [n 0])
