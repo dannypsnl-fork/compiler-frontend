@@ -57,10 +57,6 @@
   (define lexer (lex filename input))
   (parser filename lexer (stream) 0))
 
-(define (parse name input)
-  (define p (make-parser name input))
-  (parse-expr p #f 1))
-
 (define (peek p [n 0])
   (get-token p (+ (parser-offset p) n)))
 (define (take p)
@@ -111,6 +107,10 @@
 
 (module+ test
   (require rackunit)
+
+  (define (parse name input)
+    (define p (make-parser name input))
+    (parse-expr p #f 1))
 
   (parameterize ([keyword* '("true" "false" "and" "or")])
     (check-equal? (parse "parsing" (open-input-string "12 + 23 * 34"))
