@@ -112,20 +112,21 @@
 (module+ test
   (require rackunit)
 
-  (check-equal? (parse "parsing" (open-input-string "12 + 23 * 34"))
-                (binary 'add 12 (binary 'mul 23 34)))
+  (parameterize ([keyword* '("true" "false" "and" "or")])
+    (check-equal? (parse "parsing" (open-input-string "12 + 23 * 34"))
+                  (binary 'add 12 (binary 'mul 23 34)))
 
-  (test-case "increase token stream automatically"
-             (define lexer (lex "" (open-input-string "12 + 23 * 34")))
-             (define p (parser "" lexer (stream) 0))
-             (check-equal? (get-token p 4)
-                           (token 'number "34" (pos 1 12))))
+    (test-case "increase token stream automatically"
+               (define lexer (lex "" (open-input-string "12 + 23 * 34")))
+               (define p (parser "" lexer (stream) 0))
+               (check-equal? (get-token p 4)
+                             (token 'number "34" (pos 1 12))))
 
-  (test-case "right assoc"
-             (check-equal? (parse "parsing" (open-input-string "12 ^ 23 ^ 34"))
-                           (binary '^ 12 (binary '^ 23 34))))
+    (test-case "right assoc"
+               (check-equal? (parse "parsing" (open-input-string "12 ^ 23 ^ 34"))
+                             (binary '^ 12 (binary '^ 23 34))))
 
-  (check-equal? (parse "parsing" (open-input-string "true and true = true or false"))
-                (binary 'eq
-                        (binary 'and 'true 'true)
-                        (binary 'or 'true 'false))))
+    (check-equal? (parse "parsing" (open-input-string "true and true = true or false"))
+                  (binary 'eq
+                          (binary 'and 'true 'true)
+                          (binary 'or 'true 'false)))))
